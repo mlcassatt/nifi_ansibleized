@@ -30,10 +30,10 @@ Using Ansible playbooks in concert with other user's roles (@cavemandaveman) to 
 
 ## Running the examples
 Create a single node with no login creds nor encrypted link
-ansible-playbook -i stagin.yml remove_nifi.yml http_server.yml single_node.yml 
+`ansible-playbook -i staging.yml remove_nifi.yml http_server.yml single_node.yml`
 
 Create a multi node nifi setup with no login creds nor encrypted link
-ansible-playbook -i stagin.yml remove_nifi.yml http_server.yml multi_node.yml 
+`ansible-playbook -i staging.yml remove_nifi.yml http_server.yml multi_node.yml` 
 
 Create a multi node nifi setup with TLS and default client certificate to load into your browser
 Let's create ssl keys for our systems quick
@@ -43,4 +43,5 @@ Build a vault with your keys to reference from our playbooks:
 You'll want to create the above ^^^ cert information into separate yml variable files per host, i.e., host_vars. So, for instance, copy nifi1.test.local's output and paste into:
 `ansible-vault edit host_vars/nifi1.test.local.yml`
 Also, be sure to import the p12 certificate with password for client login to your new TLS protected cluster!
+`ansible-playbook --ask-vault-pass -i staging.yml remove_nifi.yml http_server.yml multi_tls_node.yml`
 
