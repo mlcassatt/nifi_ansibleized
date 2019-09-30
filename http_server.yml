@@ -1,0 +1,35 @@
+---
+- hosts:
+  - nifi1.test.local
+  become: true
+
+  tasks:
+    - name: Install java and httpd
+      yum: 
+        name: 
+        - java
+        - httpd
+        state: latest
+    - name: open httpd port on firewall
+      firewalld:
+        port: "80/tcp"
+        state: enabled
+        permanent: true
+        immediate: true
+    - name: remove nss.conf if it exists
+      file:
+        state: absent
+        name: /etc/httpd/conf.d/nss.conf
+    - name: Start httpd service and ensure always started
+      service:
+        state: started
+        name: httpd
+        enabled: true
+    - name: ensure httpd dir exists for cavemandaveman download
+      file:  
+        path: /var/www/html/nifi/1.9.2/
+        state: directory
+    - name: Copy offline nifi bundle into specific dir
+      copy:
+        src: roles/nifi/files/nifi-1.9.2-bin.tar.gz
+        dest: /var/www/html/nifi/1.9.2/nifi-1.9.2-bin.tar.gz

@@ -1,0 +1,16 @@
+---
+- hosts:
+  - nifiservers
+  become: true
+
+  tasks:
+  - name: stop nifi
+    service:
+      name: nifi
+      enabled: false
+      state: stopped
+  
+  - name: Clear all nifi
+    file:
+      path: /opt/nifi
+      state: absent

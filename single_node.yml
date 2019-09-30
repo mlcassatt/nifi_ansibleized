@@ -1,0 +1,29 @@
+- hosts: 
+  - nifi1.test.local
+  become: yes
+
+  roles:
+    - cavemandaveman.nifi
+  vars:
+    nifi_properties:
+      nifi.web.http.host: "{{ ansible_fqdn }}"
+      nifi.web.http.port: "8080"
+      nifi.web.https.host: ""
+      nifi.web.https.port: ""
+      nifi.remote.input.http.enabled: false
+      nifi.cluster.protocol.is.secure: false
+
+  tasks:
+    - name: open the nifi UI port
+      firewalld:
+        port: "8080/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+    - name: (re)start nifi
+      service: 
+        name: nifi
+        enabled: true
+        state: started
+        
+

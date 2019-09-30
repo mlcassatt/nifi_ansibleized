@@ -1,0 +1,95 @@
+- hosts:
+  - nifiservers
+  become: yes
+
+  pre_tasks:
+    - name: make sure hosts all know of each other without dns
+      template:
+        src=roles/nifi/templates/etc/hosts.j2
+        dest=/etc/hosts
+    - name: Install java 
+      yum: 
+        name: 
+        - java
+        state: latest
+      when: '"installed" in "rpm -q {java}"'
+  roles:
+    - cavemandaveman.nifi
+  vars:
+    nifi_properties:
+      nifi.web.http.host: "{{ ansible_fqdn }}"
+      nifi.web.http.port: "8080"
+      nifi.web.https.host: ""
+      nifi.web.https.port: ""
+# We need remote input to receive from other hosts
+      nifi.remote.input.http.enabled: true
+# No security here
+      nifi.cluster.protocol.is.secure: false
+      nifi.cluster.is.node: true
+# A way to talk
+      nifi.cluster.node.address: "{{ ansible_fqdn }}"
+      nifi.cluster.node.protocol.port: 11443
+      nifi.cluster.flow.election.max.candidates: 3
+      nifi.cluster.load.balance.host: "{{ ansible_fqdn }}"
+      nifi.cluster.load.balance.port: 6342
+      nifi.state.management.embedded.zookeeper.start: true
+      nifi.zookeeper.connect.string: nifi1.test.local:2181,nifi2.test.local:2181,nifi3.test.local:2181
+    state_management:
+      /stateManagement/cluster-provider/property[@name="Connect String"]: "{{ nifi_properties['nifi.zookeeper.connect.string'] }}"
+    zookeeper_myid: "{{ ansible_default_ipv4.address.split('.')[-1] }}"
+    zookeeper:
+# A bug? <- You'll see stuff like this often with shared modules
+      dataDir: "{{ nifi_config_dirs.external_config }}/state/zookeeper"
+      server.35: nifi1.test.local:2888:3888
+      server.92: nifi2.test.local:2888:3888
+      server.2: nifi3.test.local:2888:3888
+
+  tasks:
+    - name: Create zookeeper dir
+      file:
+        name: /opt/nifi/config_resources/state/zookeeper/version-2
+        owner: nifi
+        group: nifi
+        state: directory
+    - name: open the nifi zookeeper port
+      firewalld:
+        port: "2181/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+    - name: open the nifi node load balance port
+      firewalld:
+        port: "6342/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+    - name: open the nifi node cluster port
+      firewalld:
+        port: "11443/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+    - name: open the nifi zookeeper port1
+      firewalld:
+        port: "2888/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+    - name: open the nifi zookeeper port2
+      firewalld:
+        port: "3888/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+    - name: open the nifi UI port
+      firewalld:
+        port: "8080/tcp"
+        permanent: true
+        state: enabled
+        immediate: true
+    - name: (re)start nifi
+      service: 
+        name: nifi
+        enabled: true
+        state: started
+        

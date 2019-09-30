@@ -1,0 +1,14 @@
+---
+- name: Make nifi dir structure for config files
+  file:
+    state: directory
+    path: "{{ nifi_config_dirs.external_config }}"
+- name: install nifi keystore
+  copy:
+    src: certs/{{ ansible_fqdn }}/keystore.jks
+    dest: "{{ nifi_config_dirs.external_config }}/keystore.jks"
+- name: install nifi trustStore
+  copy:
+    src: certs/{{ ansible_fqdn }}/truststore.jks
+    dest: "{{ nifi_config_dirs.external_config }}/truststore.jks"
+  
