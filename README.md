@@ -6,6 +6,7 @@ Using Ansible playbooks in concert with other user's roles (@cavemandaveman) to 
 * http_server.yml - Create an offline http server (needed for each follow-on task)
 * single_node.yml - Create a single nifi instance from your own (also created) offline http server 
 * multi_node.yml - Create several nifi servers that cluster to support a flow
+* multi_tls_node.yml - Create several nifi servers that cluster to support a flow using encryption and client authentication
 * inventory (staging.yml for me) - Ensure you have at least a nifiservers group and at least one system/VM referenced below:
   * `[nifiservers]`
   * `nifi1.test.local`
@@ -29,15 +30,15 @@ Using Ansible playbooks in concert with other user's roles (@cavemandaveman) to 
 
 
 ## Running the examples
-Create a single node with no login creds nor encrypted link
+### Create a single node with no login creds nor encrypted link
 
 `ansible-playbook -i staging.yml remove_nifi.yml http_server.yml single_node.yml`
 
-Create a multi node nifi setup with no login creds nor encrypted link
+### Create a multi node nifi setup with no login creds nor encrypted link
 
 `ansible-playbook -i staging.yml remove_nifi.yml http_server.yml multi_node.yml` 
 
-Create a multi node nifi setup with TLS and default client certificate to load into your browser
+### Create a multi node nifi setup with TLS and default client certificate to load into your browser
 
 Let's create ssl keys for our systems quick
 
