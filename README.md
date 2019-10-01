@@ -22,6 +22,7 @@ Using Ansible playbooks in concert with other user's roles (@cavemandaveman) to 
 1. Get a copy for offline usage of cavemandaveman.nifi
    1. For simplicity sake, edit /etc/hosts and add a line for your first nifiserver instance (nifi1.test.local in my case) to include: apache.cs.utah.edu. i.e.,
 `192.168.x.x <myhostname.fqdn> <myhostname> apache.cs.utah.edu.` 
+   1. Alternatively, you could set the `download_mirror_uri` variable at the group_var, host_vars, inventory (not recommended) or task level to override.
 1. Get the nifi-toolkit-x.x.x matching current version downloaded. 
 1. Create a role to store your work
    1. `ansible-galaxy init nifi` 
