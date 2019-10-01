@@ -7,12 +7,12 @@ Using Ansible playbooks in concert with other user's roles (@cavemandaveman) to 
 * single_node.yml - Create a single nifi instance from your own (also created) offline http server 
 * multi_node.yml - Create several nifi servers that cluster to support a flow
 * multi_tls_node.yml - Create several nifi servers that cluster to support a flow using encryption and client authentication
-* inventory (staging.yml for me) - Ensure you have at least a nifiservers group and at least one system/VM referenced below:
+* inventory (staging for me) - Ensure you have at least a nifiservers group and at least one system/VM referenced below:
   * `[nifiservers]`
   * `nifi1.test.local`
 
 ## Prep
-1. Build up to 3 VMs/machines ideally with RHEL 7.x with fqdns in your /etc/hosts that match staging.yml (or whatever you call your inventory)
+1. Build up to 3 VMs/machines ideally with RHEL 7.x with fqdns in your /etc/hosts that match staging (or whatever you call your inventory)
 1. Ensure that the 3 VMs/machines have the ability to pull package for update/install from a local repository. We'll at least need:
    1. openssl
    1. java
@@ -32,11 +32,11 @@ Using Ansible playbooks in concert with other user's roles (@cavemandaveman) to 
 ## Running the examples
 ### Create a single node with no login creds nor encrypted link
 
-`ansible-playbook -i staging.yml remove_nifi.yml http_server.yml single_node.yml`
+`ansible-playbook -i staging remove_nifi.yml http_server.yml single_node.yml`
 
 ### Create a multi node nifi setup with no login creds nor encrypted link
 
-`ansible-playbook -i staging.yml remove_nifi.yml http_server.yml multi_node.yml` 
+`ansible-playbook -i staging remove_nifi.yml http_server.yml multi_node.yml` 
 
 ### Create a multi node nifi setup with TLS and default client certificate to load into your browser
 
@@ -52,5 +52,5 @@ You'll want to create the above ^^^ cert information into separate yml variable 
 `ansible-vault edit host_vars/nifi1.test.local.yml`
 Also, be sure to import the p12 certificate with password for client login to your new TLS protected cluster!
 
-`ansible-playbook --ask-vault-pass -i staging.yml remove_nifi.yml http_server.yml multi_tls_node.yml`
+`ansible-playbook --ask-vault-pass -i staging remove_nifi.yml http_server.yml multi_tls_node.yml`
 
